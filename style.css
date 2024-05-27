@@ -2,6 +2,50 @@
 body {
   overflow: hidden;
 }
+
+#loading-bar {
+  width: 0; /* Inicialmente definido como zero para começar invisível */
+  height: 2px; /* Altura da barra de carregamento */
+  background-color: #0a3c90; /* Cor azul para a barra de carregamento */
+  margin-top: 10px; /* Espaço superior para separar do texto */
+  transition: width 3s ease-in-out; /* Animação para a largura da barra de carregamento */
+}
+
+#depoisdoform {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border: 10px;
+  border-color: #333;
+  border-radius: 10px;
+  z-index: 1000;
+}
+
+#depoisdoform.hidden {
+  display: none;
+}
+
+#depoisdoform h2 {
+    font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  color: #0a3c90;
+  font-size: 20px;
+  padding-bottom: 10px;
+}
+
+#depoisdoform p {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #0a3c90;
+  font-size: 15px;
+}
+
+
 body {
   background-image: url('https://i.postimg.cc/7h6JKd06/Ativo-1-8.png');
   background-size: cover; /* Faz a imagem cobrir todo o fundo */
@@ -135,7 +179,7 @@ h2 {
   border-width: 1em 0 1em 1em;
   border-color: transparent transparent transparent #007bff;
   position: absolute;
-  border-left-color: #FFF;
+  border-left-color: #ffffff;
   top: 50%;
   left: -1px;
   margin-top: -1em;

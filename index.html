@@ -21,6 +21,7 @@
       <span>GIRAR</span>
     </div>
   </div>
+
   <!--TEXTO DEPOIS DA ROLETA-->
   <div id="texto-personalizado" class="hidden custom-text">
     <div class="form-container">
@@ -31,208 +32,221 @@
       <button id="submitBtn" type="submit">RESGATAR AGORA</button>
     </div>
   </div>
+  <!-- TEXTO DEPOIS DO FORMULÁRIO -->
+<div id="depoisdoform" class="hidden custom-text">
+  <h2>DADOS SALVOS COM SUCESSO!</h2>
+  <p>FIQUE ATENTO A SUA CAIXA DE E-MAIL OU WHATSAPP QUE IREMOS ENVIAR SEUS BILHETES</p>
+  <div id="loading-bar"></div> <!-- Adicionando a barra de carregamento aqui -->
+</div>
+
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.0/velocity.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone-min.js'></script>
   <script src="./script.js"></script>
+  <!-- pMASCARA DE N° -->
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+    var input = document.getElementById('whatsapp');
+    input.addEventListener('input', function() {
+        var value = input.value.replace(/\D/g, '');
+        
+        if (value.length > 2) {
+            value = '(' + value.substring(0, 2) + ') ' + value.substring(2);
+        }
+        
+        if (value.length > 6) {
+            if (value.length <= 10) {
+                value = value.substring(0, 9) + '-' + value.substring(9);
+            } else if (value.length <= 11) {
+                value = value.substring(0, 10) + '-' + value.substring(10);
+            }
+        }
+
+        input.value = value;
+    });
+
+    // Adicionando evento ao botão de envio
+    document.getElementById('submitBtn').addEventListener('click', function(event) {
+        event.preventDefault();
+        
+        var nome = document.getElementById('nome').value;
+        var whatsapp = document.getElementById('whatsapp').value;
+
+        // URL do webhook do n8n
+        var webhookUrl = 'https://webhook.empreendimentosonfire.win/webhook/roletaleads';
+
+        // Enviando dados via webhook
+        fetch(webhookUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nome: nome,
+                whatsapp: whatsapp
+            })
+        }).then(response => {
+          if (response.ok) {
+    // Ocultar o formulário com transição de fade out
+    $('#texto-personalizado').fadeOut(1000);
+
+// Mostrar barra de carregamento
+$('#depoisdoform').fadeIn(1000);
+$('#loading-bar').animate({width:'100%'}, 3000, function() {
+    // Nada a ser feito após a conclusão da animação da barra de carregamento
+});
+
+alert('Erro ao enviar os dados. Tente novamente.');
+}
+
+
+        }).catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao enviar os dados. Tente novamente.');
+        });
+    });
+});
+  </script>
+  <script>
+    var data = [
+      { id: '', type: 'allin', color: '#1062eb', text: 'Perdeu' },
+      { id: '', type: 'quiz', color: '#0a3c90', text: '2 Títulos' },
+      { id: '', type: 'allin', color: '#1062eb', text: 'Viajem' },
+      { id: '', type: 'allin', color: '#0a3c90', text: 'R$1.000' },
+      { id: '', color: '#1062eb', text: 'HB20' },
+      { id: '', color: '#0a3c90', text: 'Casa' },
+      { id: '', color: '#1062eb', text: 'R$500' },
+      { id: '', type: 'allin', color: '#0a3c90', text: 'R$15.00' },
+      { id: '', type: 'question', color: '#1062eb', text: 'R$200' },
+      { id: '', color: '#0a3c90', text: 'R$50' },
+      { id: '', color: '#1062eb', text: 'R$100' },
+      { id: '', type: 'allin', color: '#0a3c90', text: 'Porsche' }
+    ];
+
+    var RouletteWheel = function(el, items){
+      this.$el = $(el);
+      this.items = items || [];
+      this._bis = false;
+      this._angle = 0;
+      this._index = 0;
+      this.options = {
+        angleOffset: -90
+      }
+    }
+
+    _.extend(RouletteWheel.prototype, Backbone.Events);
+
+    RouletteWheel.prototype.render = function(){
+      var $spinner = $(this.$el.find('.spinner'));
+      var D = this.$el.width();
+      var R = D * 0.5;
+      var count = this.items.length;
+      var delta = 360 / count;
+
+      for(var i = 0; i < count; i++){
+        var item = this.items[i];
+        var color = item.color;
+        var text = item.text;
+
+        var html = [];
+        html.push('<div class="item" data-index="' + i + '" data-type="' + item.type + '">');
+        html.push('<span class="label"><span class="text">' + text + '</span></span>');
+        html.push('</div>');
+
+        var $item = $(html.join(''));
+
+        var borderTopWidth = D + D * 0.0025;
+        var deltaInRadians = delta * Math.PI / 180;
+        var borderRightWidth = D / (1 / Math.tan(deltaInRadians));
+
+        var r = delta * (count - i) + this.options.angleOffset - delta * 0.5;
+
+        $item.css({
+          borderTopWidth: borderTopWidth,
+          borderRightWidth: borderRightWidth,
+          transform: 'scale(2) rotate(' + r + 'deg)',
+          borderTopColor: color
+        });
+
+        var textHeight = parseInt((2 * Math.PI * R / count) * 0.5);
+
+        $item.find('.label').css({
+          transform: 'translateY(' + (D * -0.25) + 'px) translateX(' + (textHeight * 1.03) + 'px) rotateZ(' + (90 + delta * 0.5) + 'deg)',
+          height: textHeight + 'px',
+          lineHeight: textHeight + 'px',
+          textIndent: (R * 0.1) + 'px'
+        });
+
+        $spinner.append($item);
+      }
+
+      $spinner.css({
+        fontSize: parseInt(R * 0.06) + 'px'
+      });
+    }
+
+    RouletteWheel.prototype.bindEvents = function(){
+      this.$el.find('.button').on('click', $.proxy(this.spin, this));
+    }
+
+    var spinner;
+    $(window).ready(function(){
+      spinner = new RouletteWheel($('.roulette'), data);
+      spinner.render();
+      spinner.bindEvents();
+      
+      spinner.on('spin:start', function(r){ console.log('spin start!') });
+      spinner.on('spin:end', function(r){
+        console.log('spin end! -->' + r._index);
+        $('.roulette').fadeOut(1000, function() {
+          $('#texto-personalizado').removeClass('hidden');
+          
+          var confettiScript = document.createElement('script');
+          confettiScript.src = "https://www.napoleon.com.br/codigos/confetti.min.js";
+          document.body.appendChild(confettiScript);
+          
+          confettiScript.onload = function() {
+            confetti.start();
+            setTimeout(function() {
+              confetti.stop();
+            }, 3000);
+          };
+        });
+      });
+    });
+
+    RouletteWheel.prototype.spin = function(){
+      var index = this.items.findIndex(item => item.type === 'quiz');
+      var count = this.items.length;
+      var delta = 360 / count;
+      var a = index * delta + ((this._bis) ? 1440 : -1440);
+
+      this._bis = !this._bis;
+      this._angle = a;
+      this._index = index;
+
+      var $spinner = $(this.$el.find('.spinner'));
+
+      var _onAnimationBegin = function(){
+        this.$el.addClass('busy');
+        this.trigger('spin:start', this);
+      }
+
+      var _onAnimationComplete = function(){
+        this.$el.removeClass('busy');
+        this.trigger('spin:end', this);
+      }
+
+      $spinner.velocity('stop').velocity({
+        rotateZ: a + 'deg'
+      }, {
+        easing: 'easeOutQuint',
+        duration: 5000,
+        begin: $.proxy(_onAnimationBegin, this),
+        complete: $.proxy(_onAnimationComplete, this)
+      });
+    }
+  </script>
 </body>
 </html>
-
-<!-- pMASCARA DE N° -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-      var input = document.getElementById('whatsapp');
-      input.addEventListener('input', function() {
-          var value = input.value.replace(/\D/g, '');
-          
-          if (value.length > 2) {
-              value = '(' + value.substring(0, 2) + ') ' + value.substring(2);
-          }
-          
-          if (value.length > 6) {
-              if (value.length <= 10) {
-                  value = value.substring(0, 9) + '-' + value.substring(9);
-              } else if (value.length <= 11) {
-                  value = value.substring(0, 10) + '-' + value.substring(10);
-              }
-          }
-
-          input.value = value;
-      });
-
-      // Adicionando evento ao botão de envio
-      document.getElementById('submitBtn').addEventListener('click', function(event) {
-          event.preventDefault();
-          
-          var nome = document.getElementById('nome').value;
-          var whatsapp = document.getElementById('whatsapp').value;
-
-          // URL do webhook do n8n
-          var webhookUrl = 'https://webhook.empreendimentosonfire.win/webhook/roletaleads';
-
-          // Enviando dados via webhook
-          fetch(webhookUrl, {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                  nome: nome,
-                  whatsapp: whatsapp
-              })
-          }).then(response => {
-              if (response.ok) {
-                  // Redirecionar para página de agradecimento
-                  window.location.href = 'https://www.google.com.br';
-              } else {
-                  alert('Erro ao enviar os dados. Tente novamente.');
-              }
-          }).catch(error => {
-              console.error('Erro:', error);
-              alert('Erro ao enviar os dados. Tente novamente.');
-          });
-      });
-  });
-</script>
-
-<script>
-  var data = [
-    { id: '', type: 'allin', color: '#1062eb', text: 'Perdeu' },
-    { id: '', type: 'quiz', color: '#0a3c90', text: '2 Títulos' },
-    { id: '', type: 'allin', color: '#1062eb', text: 'Viajem' },
-    { id: '', type: 'allin', color: '#0a3c90', text: 'R$1.000' },
-    { id: '', color: '#1062eb', text: 'HB20' },
-    { id: '', color: '#0a3c90', text: 'Casa' },
-    { id: '', color: '#1062eb', text: 'R$500' },
-    { id: '', type: 'allin', color: '#0a3c90', text: 'R$15.00' },
-    { id: '', type: 'question', color: '#1062eb', text: 'R$200' },
-    { id: '', color: '#0a3c90', text: 'R$50' },
-    { id: '', color: '#1062eb', text: 'R$100' },
-    { id: '', type: 'allin', color: '#0a3c90', text: 'Porsche' }
-  ];
-
-  var RouletteWheel = function(el, items){
-    this.$el = $(el);
-    this.items = items || [];
-    this._bis = false;
-    this._angle = 0;
-    this._index = 0;
-    this.options = {
-      angleOffset: -90
-    }
-  }
-
-  _.extend(RouletteWheel.prototype, Backbone.Events);
-
-  RouletteWheel.prototype.render = function(){
-    var $spinner = $(this.$el.find('.spinner'));
-    var D = this.$el.width();
-    var R = D * 0.5;
-    var count = this.items.length;
-    var delta = 360 / count;
-
-    for(var i = 0; i < count; i++){
-      var item = this.items[i];
-      var color = item.color;
-      var text = item.text;
-
-      var html = [];
-      html.push('<div class="item" data-index="' + i + '" data-type="' + item.type + '">');
-      html.push('<span class="label"><span class="text">' + text + '</span></span>');
-      html.push('</div>');
-
-      var $item = $(html.join(''));
-
-      var borderTopWidth = D + D * 0.0025;
-      var deltaInRadians = delta * Math.PI / 180;
-      var borderRightWidth = D / (1 / Math.tan(deltaInRadians));
-
-      var r = delta * (count - i) + this.options.angleOffset - delta * 0.5;
-
-      $item.css({
-        borderTopWidth: borderTopWidth,
-        borderRightWidth: borderRightWidth,
-        transform: 'scale(2) rotate(' + r + 'deg)',
-        borderTopColor: color
-      });
-
-      var textHeight = parseInt((2 * Math.PI * R / count) * 0.5);
-
-      $item.find('.label').css({
-        transform: 'translateY(' + (D * -0.25) + 'px) translateX(' + (textHeight * 1.03) + 'px) rotateZ(' + (90 + delta * 0.5) + 'deg)',
-        height: textHeight + 'px',
-        lineHeight: textHeight + 'px',
-        textIndent: (R * 0.1) + 'px'
-      });
-
-      $spinner.append($item);
-    }
-
-    $spinner.css({
-      fontSize: parseInt(R * 0.06) + 'px'
-    });
-  }
-
-  RouletteWheel.prototype.bindEvents = function(){
-    this.$el.find('.button').on('click', $.proxy(this.spin, this));
-  }
-
-  var spinner;
-  $(window).ready(function(){
-    spinner = new RouletteWheel($('.roulette'), data);
-    spinner.render();
-    spinner.bindEvents();
-    
-    spinner.on('spin:start', function(r){ console.log('spin start!') });
-    spinner.on('spin:end', function(r){
-      console.log('spin end! -->' + r._index);
-      $('.roulette').fadeOut(1000, function() {
-        $('#texto-personalizado').removeClass('hidden');
-        
-        var confettiScript = document.createElement('script');
-        confettiScript.src = "https://www.napoleon.com.br/codigos/confetti.min.js";
-        document.body.appendChild(confettiScript);
-        
-        confettiScript.onload = function() {
-          confetti.start();
-          setTimeout(function() {
-            confetti.stop();
-          }, 3000);
-        };
-      });
-    });
-  });
-
-  RouletteWheel.prototype.spin = function(){
-    var index = this.items.findIndex(item => item.type === 'quiz');
-    var count = this.items.length;
-    var delta = 360 / count;
-    var a = index * delta + ((this._bis) ? 1440 : -1440);
-
-    this._bis = !this._bis;
-    this._angle = a;
-    this._index = index;
-
-    var $spinner = $(this.$el.find('.spinner'));
-
-    var _onAnimationBegin = function(){
-      this.$el.addClass('busy');
-      this.trigger('spin:start', this);
-    }
-
-    var _onAnimationComplete = function(){
-      this.$el.removeClass('busy');
-      this.trigger('spin:end', this);
-    }
-
-    $spinner.velocity('stop').velocity({
-      rotateZ: a + 'deg'
-    }, {
-      easing: 'easeOutQuint',
-      duration: 5000,
-      begin: $.proxy(_onAnimationBegin, this),
-      complete: $.proxy(_onAnimationComplete, this)
-    });
-  }
-</script>
