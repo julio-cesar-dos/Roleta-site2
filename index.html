@@ -63,20 +63,20 @@
                       value = value.substring(0, 10) + '-' + value.substring(10);
                   }
               }
-
+      
               input.value = value;
           });
-
+      
           // Adicionando evento ao botão de envio
           document.getElementById('submitBtn').addEventListener('click', function(event) {
               event.preventDefault();
               
               var nome = document.getElementById('nome').value;
               var whatsapp = document.getElementById('whatsapp').value;
-
+      
               // URL do webhook do n8n
               var webhookUrl = 'https://webhook.empreendimentosonfire.win/webhook/roletaleads';
-
+      
               // Enviando dados via webhook
               fetch(webhookUrl, {
                   method: 'POST',
@@ -90,19 +90,19 @@
               }).then(response => {
                   if (response.ok) {
                       // Ocultar o formulário com transição de fade out
-                      document.getElementById('form').style.display = 'none';
-
+                      document.getElementById('texto-personalizado').style.display = 'none';
+      
                       // Mostrar barra de carregamento
                       var depoisDoForm = document.getElementById('depoisdoform');
                       depoisDoForm.style.display = 'block';
-
+      
                       var loadingBar = document.getElementById('loading-bar');
                       loadingBar.style.transition = 'width 3s';
                       loadingBar.style.width = '100%';
-
-                      // Abrir uma nova aba 3 segundos após a exibição do elemento com a mensagem final
+      
+                      // Redirecionar para outra página após a barra de carregamento completar
                       setTimeout(function() {
-                          window.open('https://www.site.com', '_blank');
+                          window.location.href = 'https://www.site.com';
                       }, 3000);
                   } else {
                       throw new Error('Erro ao enviar os dados. Tente novamente.');
@@ -114,7 +114,8 @@
               });
           });
       });
-  </script>
+      </script>
+      
   <script>
     var data = [
       { id: '', type: 'allin', color: '#1062eb', text: 'Perdeu' },
