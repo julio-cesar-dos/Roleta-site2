@@ -44,65 +44,76 @@
   <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone-min.js'></script>
   <script src="./script.js"></script>
-  <!-- pMASCARA DE N° -->
-  <script>
-document.addEventListener('DOMContentLoaded', function() {
-    var input = document.getElementById('whatsapp');
-    input.addEventListener('input', function() {
-        var value = input.value.replace(/\D/g, '');
-        
-        if (value.length > 2) {
-            value = '(' + value.substring(0, 2) + ') ' + value.substring(2);
-        }
-        
-        if (value.length > 6) {
-            if (value.length <= 10) {
-                value = value.substring(0, 9) + '-' + value.substring(9);
-            } else if (value.length <= 11) {
-                value = value.substring(0, 10) + '-' + value.substring(10);
-            }
-        }
+  <!-- 
+    MASCARA DE N° -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          var input = document.getElementById('whatsapp');
+          input.addEventListener('input', function() {
+              var value = input.value.replace(/\D/g, '');
+              
+              if (value.length > 2) {
+                  value = '(' + value.substring(0, 2) + ') ' + value.substring(2);
+              }
+              
+              if (value.length > 6) {
+                  if (value.length <= 10) {
+                      value = value.substring(0, 9) + '-' + value.substring(9);
+                  } else if (value.length <= 11) {
+                      value = value.substring(0, 10) + '-' + value.substring(10);
+                  }
+              }
 
-        input.value = value;
-    });
+              input.value = value;
+          });
 
-// Adicionando evento ao botão de envio
-document.getElementById('submitBtn').addEventListener('click', function(event) {
-    event.preventDefault();
-    
-    var nome = document.getElementById('nome').value;
-    var whatsapp = document.getElementById('whatsapp').value;
+          // Adicionando evento ao botão de envio
+          document.getElementById('submitBtn').addEventListener('click', function(event) {
+              event.preventDefault();
+              
+              var nome = document.getElementById('nome').value;
+              var whatsapp = document.getElementById('whatsapp').value;
 
-    // URL do webhook do n8n
-    var webhookUrl = 'https://webhook.empreendimentosonfire.win/webhook/roletaleads';
+              // URL do webhook do n8n
+              var webhookUrl = 'https://webhook.empreendimentosonfire.win/webhook/roletaleads';
 
-    // Enviando dados via webhook
-    fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            nome: nome,
-            whatsapp: whatsapp
-        })
-    }).then(response => {
-        if (response.ok) {
-            // Ocultar o formulário com transição de fade out
-            $('#texto-personalizado').fadeOut(1000);
+              // Enviando dados via webhook
+              fetch(webhookUrl, {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                      nome: nome,
+                      whatsapp: whatsapp
+                  })
+              }).then(response => {
+                  if (response.ok) {
+                      // Ocultar o formulário com transição de fade out
+                      document.getElementById('form').style.display = 'none';
 
-            // Mostrar barra de carregamento
-            $('#depoisdoform').fadeIn(1000);
-            $('#loading-bar').animate({width:'100%'}, 3000, function() {
-                // Enviar mensagem para o documento pai
-                window.parent.postMessage('loadingComplete', '*');
-            });
+                      // Mostrar barra de carregamento
+                      var depoisDoForm = document.getElementById('depoisdoform');
+                      depoisDoForm.style.display = 'block';
 
-            alert('Erro ao enviar os dados. Tente novamente.');
-        }
-    });
-});
+                      var loadingBar = document.getElementById('loading-bar');
+                      loadingBar.style.transition = 'width 3s';
+                      loadingBar.style.width = '100%';
 
+                      // Abrir uma nova aba 3 segundos após a exibição do elemento com a mensagem final
+                      setTimeout(function() {
+                          window.open('https://www.site.com', '_blank');
+                      }, 3000);
+                  } else {
+                      throw new Error('Erro ao enviar os dados. Tente novamente.');
+                  }
+              }).catch(error => {
+                  // Lidar com o erro da requisição
+                  console.error(error);
+                  alert(error.message);
+              });
+          });
+      });
   </script>
   <script>
     var data = [
