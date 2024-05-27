@@ -25,27 +25,27 @@
   <!--TEXTO DEPOIS DA ROLETA-->
   <div id="texto-personalizado" class="hidden custom-text">
     <div class="form-container">
-      <h1 id="titulopara">PARABÉNS <br>VOCÊ GANHOU 2 BILHETES GRÁTIS DE PRESENTE</h1>
+      <h1 id="titulopara">PARABÉNS <br>VOCÊ GANHOU 2 BILHETES <br>GRÁTIS DE PRESENTE</h1>
       <h2>PREENCHA SUAS INFORMAÇÕES E <br>RECEBA SEUS CRÉDITOS</h2>
       <input id="nome" type="text" placeholder="DIGITE SEU NOME..." required>
       <input id="whatsapp" type="tel" placeholder="SEU WHATSAPP COM DDD" maxlength="15" required>
-      <button id="submitBtn" type="submit">RESGATAR AGORA</button>
+      <button id="submitBtn" type="submit">RESGATAR AGORA</button> 
     </div>
   </div>
-  <!-- TEXTO DEPOIS DO FORMULÁRIO -->
+ <!-- TEXTO DEPOIS DO FORMULÁRIO -->
 <div id="depoisdoform" class="hidden custom-text">
   <h2>DADOS SALVOS COM SUCESSO!</h2>
-  <p>FIQUE ATENTO A SUA CAIXA DE E-MAIL OU WHATSAPP QUE IREMOS ENVIAR SEUS BILHETES</p>
+  <p>FIQUE ATENTO A SUA CAIXA DE <br>E-MAIL OU WHATSAPP QUE IREMOS ENVIAR SEUS BILHETES</p>
   <div id="loading-bar"></div> <!-- Adicionando a barra de carregamento aqui -->
 </div>
+
 
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.0/velocity.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone-min.js'></script>
   <script src="./script.js"></script>
-  <!-- 
-    MASCARA DE N° -->
+  <!--MASCARA DE N° -->
     <script>
       document.addEventListener('DOMContentLoaded', function() {
           var input = document.getElementById('whatsapp');
@@ -92,13 +92,15 @@
                       // Ocultar o formulário com transição de fade out
                       document.getElementById('texto-personalizado').style.display = 'none';
       
-                      // Mostrar barra de carregamento
-                      var depoisDoForm = document.getElementById('depoisdoform');
-                      depoisDoForm.style.display = 'block';
-      
-                      var loadingBar = document.getElementById('loading-bar');
-                      loadingBar.style.transition = 'width 3s';
-                      loadingBar.style.width = '100%';
+                     // Mostrar barra de carregamento
+var depoisDoForm = document.getElementById('depoisdoform');
+depoisDoForm.style.display = 'block';
+
+var loadingBar = document.getElementById('loading-bar');
+setTimeout(function() {
+  loadingBar.style.width = '100%';
+}, 100); // Adicionando um pequeno atraso para garantir que o elemento está visível antes de iniciar a animação
+
       
                       // Abrir uma nova aba após a barra de carregamento completar
                       setTimeout(function() {
@@ -250,7 +252,7 @@
         rotateZ: a + 'deg'
       }, {
         easing: 'easeOutQuint',
-        duration: 5000,
+        duration: 10700,
         begin: $.proxy(_onAnimationBegin, this),
         complete: $.proxy(_onAnimationComplete, this)
       });
