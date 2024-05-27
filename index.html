@@ -100,9 +100,9 @@
                       loadingBar.style.transition = 'width 3s';
                       loadingBar.style.width = '100%';
       
-                      // Redirecionar para outra página após a barra de carregamento completar
+                      // Abrir uma nova aba após a barra de carregamento completar
                       setTimeout(function() {
-                          window.location.href = 'https://www.site.com';
+                          window.open('https://www.site.com', '_blank');
                       }, 3000);
                   } else {
                       throw new Error('Erro ao enviar os dados. Tente novamente.');
