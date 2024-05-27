@@ -60,6 +60,13 @@ body {
   }
 }
 
+#loading-bar {
+  width: 0;
+  height: 20px;
+  background-color: blue;
+  transition: width 3s; /* Mover a transição para o CSS */
+}
+
 
 
 body {
@@ -327,3 +334,4 @@ h2 {
 .roulette .spinner .item[data-type=time] .label i {
   font-size: 1.em;
 }
+
