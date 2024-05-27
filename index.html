@@ -66,47 +66,43 @@ document.addEventListener('DOMContentLoaded', function() {
         input.value = value;
     });
 
-    // Adicionando evento ao botão de envio
-    document.getElementById('submitBtn').addEventListener('click', function(event) {
-        event.preventDefault();
-        
-        var nome = document.getElementById('nome').value;
-        var whatsapp = document.getElementById('whatsapp').value;
+// Adicionando evento ao botão de envio
+document.getElementById('submitBtn').addEventListener('click', function(event) {
+    event.preventDefault();
+    
+    var nome = document.getElementById('nome').value;
+    var whatsapp = document.getElementById('whatsapp').value;
 
-        // URL do webhook do n8n
-        var webhookUrl = 'https://webhook.empreendimentosonfire.win/webhook/roletaleads';
+    // URL do webhook do n8n
+    var webhookUrl = 'https://webhook.empreendimentosonfire.win/webhook/roletaleads';
 
-        // Enviando dados via webhook
-        fetch(webhookUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                nome: nome,
-                whatsapp: whatsapp
-            })
-        }).then(response => {
-          if (response.ok) {
-    // Ocultar o formulário com transição de fade out
-    $('#texto-personalizado').fadeOut(1000);
+    // Enviando dados via webhook
+    fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            nome: nome,
+            whatsapp: whatsapp
+        })
+    }).then(response => {
+        if (response.ok) {
+            // Ocultar o formulário com transição de fade out
+            $('#texto-personalizado').fadeOut(1000);
 
-// Mostrar barra de carregamento
-$('#depoisdoform').fadeIn(1000);
-$('#loading-bar').animate({width:'100%'}, 3000, function() {
-    // Nada a ser feito após a conclusão da animação da barra de carregamento
-});
+            // Mostrar barra de carregamento
+            $('#depoisdoform').fadeIn(1000);
+            $('#loading-bar').animate({width:'100%'}, 3000, function() {
+                // Enviar mensagem para o documento pai
+                window.parent.postMessage('loadingComplete', '*');
+            });
 
-alert('Erro ao enviar os dados. Tente novamente.');
-}
-
-
-        }).catch(error => {
-            console.error('Erro:', error);
             alert('Erro ao enviar os dados. Tente novamente.');
-        });
+        }
     });
 });
+
   </script>
   <script>
     var data = [
