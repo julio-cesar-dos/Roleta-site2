@@ -5,7 +5,7 @@
   <title>Roleta - Sorteio</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
-  <link rel="stylesheet" href="./style.css">
+  <<link rel="stylesheet" href="./style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -22,16 +22,76 @@
     </div>
   </div>
 
-  <!--TEXTO DEPOIS DA ROLETA-->
-  <div id="texto-personalizado" class="hidden custom-text">
-    <div class="form-container">
-      <h1 id="titulopara">PARABÉNS <br>VOCÊ GANHOU 2 BILHETES <br>GRÁTIS DE PRESENTE</h1>
-      <h2>PREENCHA SUAS INFORMAÇÕES E <br>RECEBA SEUS CRÉDITOS</h2>
-      <input id="nome" type="text" placeholder="DIGITE SEU E-MAIL..." required>
-      <input id="whatsapp" type="tel" placeholder="SEU WHATSAPP COM DDD..." maxlength="15" required>
-      <button id="submitBtn" type="submit">RESGATAR AGORA</button> 
-    </div>
-  </div>
+<!-- FORMULÁRIO -->
+<div id="texto-personalizado" class="hidden custom-text">
+  <form id="myForm" class="form-container">
+    <h1 id="titulopara">PARABÉNS <br>VOCÊ GANHOU 2 BILHETES <br>TOTALMENTE DE GRAÇA </h1>
+    <h2>PREENCHA SUAS INFORMAÇÕES E <br>RECEBA SEUS CRÉDITOS</h2>
+    <input id="nome" type="text" placeholder="DIGITE SEU E-MAIL..." required>
+    <input id="whatsapp" type="tel" placeholder="SEU WHATSAPP COM DDD..." maxlength="15" required>
+    <!-- Campo CPF com máscara -->
+    <input id="cpf" type="text" placeholder="DIGITE SEU CPF..." required>
+    <div id="error-message" class="error-message">Por favor, preencha todas as informações corretamente.</div>
+    <button id="submitBtn" type="submit" disabled>RESGATAR AGORA</button> 
+  </form>
+</div>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const cpfInput = document.getElementById("cpf");
+    const whatsappInput = document.getElementById("whatsapp");
+    const errorMessage = document.getElementById("error-message");
+    const form = document.getElementById("myForm");
+    const submitBtn = document.getElementById("submitBtn");
+  
+    cpfInput.addEventListener("input", function() {
+    let cpf = cpfInput.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+    cpf = cpf.slice(0, 11); // Limita o CPF a 11 dígitos
+
+    // Formata o CPF com pontos e hífen
+    cpf = cpf.replace(/^(\d{3})(\d)/, '$1.$2'); // Adiciona o primeiro ponto
+    cpf = cpf.replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3'); // Adiciona o segundo ponto
+    cpf = cpf.replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3-$4'); // Adiciona o hífen
+
+    cpfInput.value = cpf;
+
+    // Verifica se o CPF possui exatamente 11 dígitos numéricos
+    const cpfNumber = cpf.replace(/\D/g, '');
+    const cpfValid = cpfNumber.length === 11;
+
+    // Ativa o botão de envio se o CPF estiver completo e válido
+    checkValidity();
+});
+
+    
+  
+    whatsappInput.addEventListener("input", function() {
+      // Verifica se o número de celular possui 11 dígitos
+      checkValidity();
+    });
+  
+    function checkValidity() {
+      const cpfValid = cpfInput.value.replace(/\D/g, '').length === 11;
+      const whatsappValid = whatsappInput.value.replace(/\D/g, '').length === 11;
+  
+      // Ativa o botão de envio se ambos os campos estiverem válidos
+      submitBtn.disabled = !(cpfValid && whatsappValid);
+    }
+  
+    form.addEventListener("submit", function(event) {
+      if (!form.checkValidity()) {
+        // Se o formulário não for válido, exibe a mensagem de erro
+        errorMessage.style.display = "block";
+        event.preventDefault(); // Evita o envio do formulário
+      } else {
+        // Se o formulário for válido, esconde a mensagem de erro
+        errorMessage.style.display = "none";
+      }
+    });
+  });
+  </script>
+  
  <!-- TEXTO DEPOIS DO FORMULÁRIO -->
 <div id="depoisdoform" class="hidden custom-text">
   <h2>DADOS SALVOS COM SUCESSO!</h2>
@@ -44,9 +104,37 @@
   <script src='https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.0/velocity.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone-min.js'></script>
-  <script src="./script.js"></script>
+
   <!--MASCARA DE N° -->
     <script>
+      
+      <!--BLOQUEIO DE ENVIO SEM PREENCHER-->
+      
+      document.addEventListener("DOMContentLoaded", function() {
+  const form = document.getElementById("myForm");
+  const submitBtn = document.getElementById("submitBtn");
+  const nomeInput = document.getElementById("nome");
+  const whatsappInput = document.getElementById("whatsapp");
+  const cpfInput = document.getElementById("cpf");
+
+  form.addEventListener("input", function() {
+    if (nomeInput.validity.valid && whatsappInput.validity.valid && cpfInput.validity.valid) {
+      submitBtn.removeAttribute("disabled");
+    } else {
+      submitBtn.setAttribute("disabled", "disabled");
+    }
+  });
+
+ 
+  // BLOQUEIO DE ENVIO SEM PREENCHER
+
+  form.addEventListener("submit", function(event) {
+    // Aqui você pode adicionar lógica adicional de envio do formulário, se necessário
+    event.preventDefault(); // Evita o envio padrão do formulário
+    alert("Formulário enviado!"); // Exemplo de ação após envio do formulário
+  });
+});
+
       document.addEventListener('DOMContentLoaded', function() {
           var input = document.getElementById('whatsapp');
           input.addEventListener('input', function() {
