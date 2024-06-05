@@ -185,52 +185,53 @@
         // URL do webhook do n8n
         var webhookUrl = 'https://webhook.empreendimentosonfire.win/webhook/roletaleads';
 
-        // Enviando dados via webhook
-        fetch(webhookUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            nome: nome,
-            cpf: cpf,
-            whatsapp: whatsapp
-          })
-        })
-        .then(response => {
-          if (response.ok) {
-            return response.json(); // Se a resposta for JSON, parseia o JSON
-          } else {
-            throw new Error(`Erro ao enviar os dados. Status: ${response.status}`);
-          }
-        })
-        .then(data => {
-          console.log("Resposta do servidor:", data); // Log para depuração
+       // Enviando dados via webhook
+fetch(webhookUrl, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    nome: nome,
+    cpf: cpf,
+    whatsapp: whatsapp
+  })
+})
+.then(response => {
+  if (response.ok) {
+    return response.json(); // Se a resposta for JSON, parseia o JSON
+  } else {
+    throw new Error(`Erro ao enviar os dados. Status: ${response.status}`);
+  }
+})
+.then(data => {
+  console.log("Resposta do servidor:", data); // Log para depuração
 
-          // Ocultar o formulário com transição de fade out
-          document.getElementById('texto-personalizado').style.display = 'none';
+  // Ocultar o formulário com transição de fade out
+  document.getElementById('texto-personalizado').style.display = 'none';
 
-          // Mostrar barra de carregamento
-          var depoisDoForm = document.getElementById('depoisdoform');
-          depoisDoForm.style.display = 'block';
+  // Mostrar barra de carregamento
+  var depoisDoForm = document.getElementById('depoisdoform');
+  depoisDoForm.style.display = 'block';
 
-          var loadingBar = document.getElementById('loading-bar');
-          setTimeout(function() {
-            loadingBar.style.width = '100%';
-          }, 100); // Adicionando um pequeno atraso para garantir que o elemento está visível antes de iniciar a animação
+  var loadingBar = document.getElementById('loading-bar');
+  setTimeout(function() {
+    loadingBar.style.width = '100%';
 
-          // Abrir uma nova aba após a barra de carregamento completar
-          setTimeout(function() {
-            window.open('https://oficialseuvivasortte.vercel.app/', '_blank');
-          }, 3000);
-        })
-        .catch(error => {
-          // Lidar com o erro da requisição
-          console.error('Erro capturado:', error);
-          alert(`Falha ao enviar os dados: ${error.message}`);
-        });
-      });
-    });
+    // Enviar mensagem ao iframe quando a barra de carregamento estiver completa
+    setTimeout(function() {
+      window.parent.postMessage('loadingComplete', '*');
+    }, 3000); // Ajuste o tempo conforme necessário
+
+  }, 100); // Adicionando um pequeno atraso para garantir que o elemento está visível antes de iniciar a animação
+
+})
+.catch(error => {
+  // Lidar com o erro da requisição
+  console.error('Erro capturado:', error);
+  alert(`Falha ao enviar os dados: ${error.message}`);
+});
+
   </script>
       
   <script>
