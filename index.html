@@ -41,12 +41,12 @@
       .titulo-primario {
         color: white;
         margin-top: 0;
-        margin-bottom: 100px;
+        margin-bottom: 0;
       }
     
       @media (max-width: 600px) {
         .titulo-primario {
-          font-size: 25px; /* ajuste o tamanho conforme necessário */
+          font-size: 20px; /* ajuste o tamanho conforme necessário */
         }
       }
     </style>
@@ -55,7 +55,7 @@
   <!-- FORMULÁRIO -->
   <div id="texto-personalizado" class="hidden custom-text">
     <form id="myForm" class="form-container">
-      <h1 id="titulopara">PARABÉNS <br>VOCÊ GANHOU 2 BILHETES <br>TOTALMENTE DE GRAÇA </h1>
+      <h1 id="titulopara">PARABÉNS <br>VOCÊ GANHOU 20 BILHETES <br>TOTALMENTE DE GRAÇA </h1>
       <h2>PREENCHA SUAS INFORMAÇÕES E <br>RECEBA SEUS CRÉDITOS</h2>
       <input id="nome" type="text" placeholder="DIGITE SEU E-MAIL... " required>
       <input id="whatsapp" type="tel" placeholder="SEU WHATSAPP COM DDD... " maxlength="15" required>
@@ -123,7 +123,7 @@
   <div id="depoisdoform" class="hidden custom-text">
     <h2>BILHETES REGISTRADOS COM SUCESSO!</h2>
     <p>FIQUE ATENTO A SUA CAIXA DE <br>E-MAIL OU WHATSAPP QUE IREMOS ENVIAR SEUS BILHETES</p>
-    <div id="loading-bar"></div> <!-- Adicionando a barra de carregamento aqui -->
+    <div id="loading-bar" style="width: 0%; height: 20px; background-color: #4caf50;"></div>
   </div>
 
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
@@ -151,9 +151,61 @@
       // BLOQUEIO DE ENVIO SEM PREENCHER
 
       form.addEventListener("submit", function(event) {
-        // Aqui você pode adicionar lógica adicional de envio do formulário, se necessário
         event.preventDefault(); // Evita o envio padrão do formulário
-        alert("Formulário enviado!"); // Exemplo de ação após envio do formulário
+
+        var nome = nomeInput.value;
+        var cpf = cpfInput.value;
+        var whatsapp = whatsappInput.value;
+
+        // URL do webhook do n8n
+        var webhookUrl = 'https://webhook.empreendimentosonfire.win/webhook/roletaleads';
+
+        // Enviando dados via webhook
+        fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            nome: nome,
+            cpf: cpf,
+            whatsapp: whatsapp
+          })
+        })
+        .then(response => {
+          if (response.ok) {
+            return response.json(); // Se a resposta for JSON, parseia o JSON
+          } else {
+            throw new Error(`Erro ao enviar os dados. Status: ${response.status}`);
+          }
+        })
+        .then(data => {
+          console.log("Resposta do servidor:", data); // Log para depuração
+
+          // Ocultar o formulário com transição de fade out
+          document.getElementById('texto-personalizado').style.display = 'none';
+
+          // Mostrar barra de carregamento
+          var depoisDoForm = document.getElementById('depoisdoform');
+          depoisDoForm.style.display = 'block';
+
+          var loadingBar = document.getElementById('loading-bar');
+          setTimeout(function() {
+            loadingBar.style.width = '100%';
+
+            // Enviar mensagem ao iframe quando a barra de carregamento estiver completa
+            setTimeout(function() {
+              window.parent.postMessage('loadingComplete', '*');
+            }, 3000); // Ajuste o tempo conforme necessário
+
+          }, 100); // Adicionando um pequeno atraso para garantir que o elemento está visível antes de iniciar a animação
+
+        })
+        .catch(error => {
+          // Lidar com o erro da requisição
+          console.error('Erro capturado:', error);
+          alert(`Falha ao enviar os dados: ${error.message}`);
+        });
       });
     });
 
@@ -173,65 +225,7 @@
         }
         input.value = value;
       });
-
-      // Adicionando evento ao botão de envio
-      document.getElementById('submitBtn').addEventListener('click', function(event) {
-        event.preventDefault();
-
-        var nome = document.getElementById('nome').value;
-        var cpf = document.getElementById('cpf').value;
-        var whatsapp = document.getElementById('whatsapp').value;
-
-        // URL do webhook do n8n
-        var webhookUrl = 'https://webhook.empreendimentosonfire.win/webhook/roletaleads';
-
-       // Enviando dados via webhook
-fetch(webhookUrl, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    nome: nome,
-    cpf: cpf,
-    whatsapp: whatsapp
-  })
-})
-.then(response => {
-  if (response.ok) {
-    return response.json(); // Se a resposta for JSON, parseia o JSON
-  } else {
-    throw new Error(`Erro ao enviar os dados. Status: ${response.status}`);
-  }
-})
-.then(data => {
-  console.log("Resposta do servidor:", data); // Log para depuração
-
-  // Ocultar o formulário com transição de fade out
-  document.getElementById('texto-personalizado').style.display = 'none';
-
-  // Mostrar barra de carregamento
-  var depoisDoForm = document.getElementById('depoisdoform');
-  depoisDoForm.style.display = 'block';
-
-  var loadingBar = document.getElementById('loading-bar');
-  setTimeout(function() {
-    loadingBar.style.width = '100%';
-
-    // Enviar mensagem ao iframe quando a barra de carregamento estiver completa
-    setTimeout(function() {
-      window.parent.postMessage('loadingComplete', '*');
-    }, 3000); // Ajuste o tempo conforme necessário
-
-  }, 100); // Adicionando um pequeno atraso para garantir que o elemento está visível antes de iniciar a animação
-
-})
-.catch(error => {
-  // Lidar com o erro da requisição
-  console.error('Erro capturado:', error);
-  alert(`Falha ao enviar os dados: ${error.message}`);
-});
-
+    });
   </script>
       
   <script>
