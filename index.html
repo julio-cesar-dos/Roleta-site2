@@ -17,6 +17,8 @@
 </head>
 <body>
   <div id="container" class="custom-container">
+      <div id="conteudo-inicial">
+
     <!--ANTES DO FORMULÁRIO-->
     <div id="content" class="custom-content">
       <h1 class="custom-parabens">PARABÉNS</h1>
@@ -155,13 +157,13 @@
 
       // Exibe o formulário de CPF quando a roleta for girada
       // Substitua esta lógica pela que controla a roleta
-      conteudoInicial.addEventListener("click", function() {
-        // Simula a roleta girando
-        setTimeout(function() {
-          conteudoInicial.classList.add("hidden");
-          formularioCPF.classList.remove("hidden");
-        }, 2000); // Tempo de simulação da roleta (2 segundos)
-      });
+      function exibirFormularioCPF() {
+        conteudoInicial.classList.add("hidden");
+        formularioCPF.classList.remove("hidden");
+      }
+
+      // Evento simulado da roleta girando
+      conteudoInicial.addEventListener("click", exibirFormularioCPF);
 
       const form = document.getElementById("myForm");
       const submitBtn = document.getElementById("submitBtn");
@@ -252,7 +254,7 @@
         });
       });
     });
-  </script>      
+  </script>
   <script>
     var data = [
       { id: '', type: 'allin', color: '#1062eb', text: 'Perdeu' },
