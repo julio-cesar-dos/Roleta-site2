@@ -146,7 +146,7 @@
   <script src='https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone-min.js'></script>
 
   <!--MASCARA DE N° -->
-  <script>
+   <script>
     document.addEventListener("DOMContentLoaded", function() {
       const formularioCPF = document.getElementById("formulario-cpf");
       const conteudoInicial = document.getElementById("conteudo-inicial");
@@ -193,27 +193,7 @@
             var primeiroNome = apiData.dadosBasicos.nome.split(" ")[0];
             console.log("Primeiro nome obtido:", primeiroNome);
 
-            // Enviar o primeiro nome ao iframe do segundo site
-            window.parent.postMessage({ nome: primeiroNome }, '*');
-
-            // Ocultar o formulário com transição de fade out
-            document.getElementById('formulario-cpf').style.display = 'none';
-
-            // Mostrar barra de carregamento
-            var depoisDoForm = document.getElementById('depoisdoform');
-            depoisDoForm.style.display = 'block';
-
-            var loadingBar = document.getElementById('loading-bar');
-            setTimeout(function() {
-              loadingBar.style.width = '100%';
-
-              // Enviar mensagem ao iframe quando a barra de carregamento estiver completa
-              setTimeout(function() {
-                window.parent.postMessage('loadingComplete', '*');
-              }, 3000); // Ajuste o tempo conforme necessário
-
-            }, 100); // Adicionando um pequeno atraso para garantir que o elemento está visível antes de iniciar a animação
-
+            // Restante do código...
           })
           .catch(error => {
             // Lidar com o erro da requisição da API de CPF
@@ -240,7 +220,7 @@
         });
       });
     });
-  </script>
+  </script>  </script>
   <script>
     var data = [
       { id: '', type: 'allin', color: '#1062eb', text: 'Perdeu' },
