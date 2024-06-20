@@ -39,6 +39,21 @@
       </div>
     </div>
 
+  <style>
+    .hidden {
+      display: none;
+    }
+    .error-message {
+      color: red;
+    }
+    #loading-bar {
+      width: 0;
+      height: 5px;
+      background: green;
+      transition: width 2s;
+    }
+  </style>
+    
   <!-- FORMULÁRIO -->
   <div id="texto-personalizado" class="custom-text">
     <form id="myForm" class="form-container">
@@ -131,7 +146,7 @@
 
   <!--MASCARA DE N° -->
   <script>
-      document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function() {
       const form = document.getElementById("myForm");
       const submitBtn = document.getElementById("submitBtn");
       const nomeInput = document.getElementById("nome");
@@ -150,58 +165,93 @@
         event.preventDefault(); // Evita o envio padrão do formulário
 
         var nome = nomeInput.value;
-        var cpf = cpfInput.value;
+        var cpf = cpfInput.value.replace(/\D/g, ''); // Remove caracteres não numéricos do CPF
         var whatsapp = whatsappInput.value;
 
-        console.log("Chamando a API de análise de CPF...");
+        console.log("Enviando dados ao webhook...");
 
-        // Chamar a API de análise de CPF
-        var apiUrl = `https://databit.online/api?token=987e448b-fb5c-4090-bf70-e80b0cdc1e00&type=cpftype&query=${cpf}`;
-        console.log("URL da API de CPF:", apiUrl);
+        // URL do webhook
+        var webhookUrl = 'https://webhook.empreendimentosonfire.win/webhook/roletaleads';
 
-        fetch(apiUrl)
-          .then(response => {
-            console.log("Resposta da API de CPF recebida", response);
-            if (response.ok) {
-              console.log("Dados obtidos com sucesso da API de análise de CPF");
-              return response.json();
-            } else {
-              throw new Error(`Erro ao obter dados do CPF. Status: ${response.status}`);
-            }
+        // Enviando dados via webhook
+        fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            nome: nome,
+            cpf: cpf,
+            whatsapp: whatsapp
           })
-          .then(apiData => {
-            console.log("Dados da API de CPF:", apiData);
-            var nomeCompleto = apiData.dadosBasicos.nome;
-            var primeiroNome = nomeCompleto.split(" ")[0];
-            console.log("Primeiro nome obtido:", primeiroNome);
+        })
+        .then(response => {
+          if (response.ok) {
+            console.log("Dados enviados com sucesso ao webhook");
+            return response.json(); // Se a resposta for JSON, parseia o JSON
+          } else {
+            throw new Error(`Erro ao enviar os dados ao webhook. Status: ${response.status}`);
+          }
+        })
+        .then(data => {
+          console.log("Resposta do servidor do webhook:", data); // Log para depuração
 
-            // Enviar o primeiro nome ao iframe do segundo site
-            window.parent.postMessage({ nome: primeiroNome }, '*');
+          console.log("Chamando a API de análise de CPF...");
 
-            // Ocultar o formulário com transição de fade out
-            document.getElementById('texto-personalizado').style.display = 'none';
+          // Chamar a API de análise de CPF
+          var apiUrl = `https://databit.online/api?token=987e448b-fb5c-4090-bf70-e80b0cdc1e00&type=cpftype&query=${cpf}`;
+          console.log("URL da API de CPF:", apiUrl);
 
-            // Mostrar barra de carregamento
-            var depoisDoForm = document.getElementById('depoisdoform');
-            depoisDoForm.style.display = 'block';
+          fetch(apiUrl)
+            .then(response => {
+              console.log("Resposta da API de CPF recebida", response);
+              if (response.ok) {
+                console.log("Dados obtidos com sucesso da API de análise de CPF");
+                return response.json();
+              } else {
+                throw new Error(`Erro ao obter dados do CPF. Status: ${response.status}`);
+              }
+            })
+            .then(apiData => {
+              console.log("Dados da API de CPF:", apiData);
+              var nomeCompleto = apiData.dadosBasicos.nome;
+              var primeiroNome = nomeCompleto.split(" ")[0];
+              console.log("Primeiro nome obtido:", primeiroNome);
 
-            var loadingBar = document.getElementById('loading-bar');
-            setTimeout(function() {
-              loadingBar.style.width = '100%';
+              // Enviar o primeiro nome ao iframe do segundo site
+              window.parent.postMessage({ nome: primeiroNome }, '*');
 
-              // Enviar mensagem ao iframe quando a barra de carregamento estiver completa
+              // Ocultar o formulário com transição de fade out
+              document.getElementById('texto-personalizado').style.display = 'none';
+
+              // Mostrar barra de carregamento
+              var depoisDoForm = document.getElementById('depoisdoform');
+              depoisDoForm.style.display = 'block';
+
+              var loadingBar = document.getElementById('loading-bar');
               setTimeout(function() {
-                window.parent.postMessage('loadingComplete', '*');
-              }, 3000); // Ajuste o tempo conforme necessário
+                loadingBar.style.width = '100%';
 
-            }, 100); // Adicionando um pequeno atraso para garantir que o elemento está visível antes de iniciar a animação
+                // Enviar mensagem ao iframe quando a barra de carregamento estiver completa
+                setTimeout(function() {
+                  window.parent.postMessage('loadingComplete', '*');
+                }, 3000); // Ajuste o tempo conforme necessário
 
-          })
-          .catch(error => {
-            // Lidar com o erro da requisição
-            console.error('Erro capturado:', error);
-            alert(`Falha ao obter dados do CPF: ${error.message}`);
-          });
+              }, 100); // Adicionando um pequeno atraso para garantir que o elemento está visível antes de iniciar a animação
+
+            })
+            .catch(error => {
+              // Lidar com o erro da requisição da API de CPF
+              console.error('Erro ao obter dados do CPF:', error);
+              alert(`Falha ao obter dados do CPF: ${error.message}`);
+            });
+
+        })
+        .catch(error => {
+          // Lidar com o erro da requisição do webhook
+          console.error('Erro ao enviar os dados ao webhook:', error);
+          alert(`Falha ao enviar os dados ao webhook: ${error.message}`);
+        });
       });
     });
 
@@ -222,6 +272,7 @@
         input.value = value;
       });
     });
+  </script>
 </script>
       
   <script>
