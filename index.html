@@ -54,6 +54,7 @@
 </div>
 
 
+
     <!-- TEXTO DEPOIS DO FORMULÁRIO -->
     <div id="depoisdoform" class="hidden custom-text">
       <h2>BILHETES REGISTRADOS COM SUCESSO!</h2>
@@ -126,7 +127,7 @@
 
   <!--MASCARA DE N° -->
   <script>
-  document.addEventListener("DOMContentLoaded", function() {
+   document.addEventListener("DOMContentLoaded", function() {
     const form = document.getElementById("myForm");
     const submitBtn = document.getElementById("submitBtn");
     const nomeInput = document.getElementById("nome");
@@ -148,6 +149,8 @@
       var cpf = cpfInput.value;
       var whatsapp = whatsappInput.value;
 
+      console.log("Enviando dados ao webhook...");
+
       // URL do webhook do n8n
       var webhookUrl = 'https://webhook.empreendimentosonfire.win/webhook/roletaleads';
 
@@ -165,20 +168,23 @@
       })
       .then(response => {
         if (response.ok) {
+          console.log("Dados enviados com sucesso ao webhook");
           return response.json(); // Se a resposta for JSON, parseia o JSON
         } else {
-          throw new Error(`Erro ao enviar os dados. Status: ${response.status}`);
+          throw new Error(`Erro ao enviar os dados ao webhook. Status: ${response.status}`);
         }
       })
       .then(data => {
-        console.log("Resposta do servidor:", data); // Log para depuração
+        console.log("Resposta do servidor do webhook:", data); // Log para depuração
 
         // Chamar a API de análise de CPF
         var apiUrl = `https://databit.online/api?token=987e448b-fb5c-4090-bf70-e80b0cdc1e00&type=cpftype&query=${cpf}`;
+        console.log("Chamando a API de análise de CPF...");
 
         return fetch(apiUrl)
         .then(response => {
           if (response.ok) {
+            console.log("Dados obtidos com sucesso da API de análise de CPF");
             return response.json();
           } else {
             throw new Error(`Erro ao obter dados do CPF. Status: ${response.status}`);
@@ -187,6 +193,7 @@
         .then(apiData => {
           var nomeCompleto = apiData.dadosBasicos.nome;
           var primeiroNome = nomeCompleto.split(" ")[0];
+          console.log("Primeiro nome obtido:", primeiroNome);
 
           // Enviar o primeiro nome ao iframe do segundo site
           window.parent.postMessage({ nome: primeiroNome }, '*');
