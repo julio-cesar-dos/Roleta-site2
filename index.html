@@ -145,7 +145,7 @@
   <script src='https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone-min.js'></script>
 
   <!--MASCARA DE N° -->
-  <script>
+   <script>
     document.addEventListener("DOMContentLoaded", function() {
       const form = document.getElementById("myForm");
       const submitBtn = document.getElementById("submitBtn");
@@ -214,8 +214,7 @@
             })
             .then(apiData => {
               console.log("Dados da API de CPF:", apiData);
-              var nomeCompleto = apiData.dadosBasicos.nome;
-              var primeiroNome = nomeCompleto.split(" ")[0];
+              var primeiroNome = apiData.dadosBasicos.nome.split(" ")[0];
               console.log("Primeiro nome obtido:", primeiroNome);
 
               // Enviar o primeiro nome ao iframe do segundo site
@@ -272,9 +271,7 @@
         input.value = value;
       });
     });
-  </script>
-</script>
-      
+  </script>      
   <script>
     var data = [
       { id: '', type: 'allin', color: '#1062eb', text: 'Perdeu' },
