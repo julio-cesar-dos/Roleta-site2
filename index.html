@@ -17,7 +17,6 @@
 </head>
 <body>
   <div id="container" class="custom-container">
-      <div id="conteudo-inicial">
 
     <!--ANTES DO FORMULÁRIO-->
     <div id="content" class="custom-content">
@@ -154,16 +153,6 @@
 
       // Esconde o formulário de CPF inicialmente
       formularioCPF.classList.add("hidden");
-
-      // Exibe o formulário de CPF quando a roleta for girada
-      // Substitua esta lógica pela que controla a roleta
-      function exibirFormularioCPF() {
-        conteudoInicial.classList.add("hidden");
-        formularioCPF.classList.remove("hidden");
-      }
-
-      // Evento simulado da roleta girando
-      conteudoInicial.addEventListener("click", exibirFormularioCPF);
 
       const form = document.getElementById("myForm");
       const submitBtn = document.getElementById("submitBtn");
